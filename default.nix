@@ -13,13 +13,15 @@ let
   PMX = "PvP01_01_v2:555499-559411";
 
   ena = pkgs.callPackage ./ena.nix { inherit fetchFastQGZ; };
-
+  foldl1 = f: xs: foldl f (head xs) (tail xs);
   samples = ena.importFromJSON ./PRJEB2140.json;
 
   pipeline = flip pipe [
     (mapAttrsToList (id: bwa.align { inherit ref; flags = "-R'@RG\\tID:${id}\\tSM:${id}'"; }))
     (map (samtools.sort { }))
-    (octopus.call { targets = [ PMIX PMX ]; flags = "-P 1"; })
+    (map (gatk.callHaplotype { targets = [ PMIX PMX ]; }))
+    (foldl1 (a: b: gatk.merge { } { inherit a b; }))
+    (gatk.callGenotypes { })
   ];
 
 in

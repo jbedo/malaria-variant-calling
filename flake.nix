@@ -31,10 +31,12 @@
                   WALLTIME = walltime;
                   preferLocalBuild = true;
                   allowSubstitutes = false;
+                  JAVA_TOOL_OPTIONS = "-Xmx${toString (builtins.ceil (mem * 1.1))}g";
                 });
             })
 
             ./resources.nix
+            ./gatk.nix
           ];
         }; {
         defaultPackage = callBionix ./. { };
