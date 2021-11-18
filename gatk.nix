@@ -34,10 +34,10 @@ in
             -L ${pkgs.writeText "targets.intervals" (concatStringsSep "\n" targets)} \
             -O $out \
             -ERC GVCF \
-            -ploidy 1
+            -ploidy 1 \
+            --native-pair-hmm-threads $NIX_BUILD_CORES
         '';
         passthru.filetype = filetype.vcf { ref = getRef input; };
-        passthru.multicore = true;
       });
 
       merge = exec (_: { a, b }: assert getRef a == getRef b; stage {
@@ -54,7 +54,6 @@ in
             -O $out
         '';
         passthru.filetype = filetype.vcf { ref = getRef a; };
-        passthru.multicore = true;
       });
 
       callGenotypes = exec (_: input: stage {
@@ -69,7 +68,6 @@ in
             -O $out
         '';
         passthru.filetype = filetype.vcf { ref = getRef input; };
-        passthru.multicore = true;
       });
 
       index = exec
