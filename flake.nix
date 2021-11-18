@@ -3,7 +3,7 @@
   inputs = {
     bionix.url = "github:papenfusslab/bionix";
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs";
   };
 
   outputs = { self, nixpkgs, bionix, flake-utils }:
