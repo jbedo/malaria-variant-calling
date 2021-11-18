@@ -11,9 +11,9 @@ let
     ln -s ${samtools.faidx {} (getRef input)} ref.fa.fai
     ln -s ${samtools.dict {} (getRef input)} ref.dict
   '';
-  lnVcf = name: input: ''
-    ln -s ${input} ./${name}.vcf.gz
-    ln -s ${self.gatk.index {} input} ./${name}.vcf.gz.tbi
+  lnVcf = input: ''
+    ln -s ${input} ./$(basename ${input})
+    ln -s ${self.gatk.index {} input} ./$(basename ${input}).tbi
   '';
 in
 {
@@ -40,20 +40,18 @@ in
         passthru.filetype = filetype.vcf { ref = getRef input; };
       });
 
-      merge = exec (_: { a, b }: assert getRef a == getRef b; stage {
+      merge = exec (_: xs: stage {
         name = "CombineGVCFs.g.vcf.gz";
         buildInputs = [ self.gatk.app ];
         buildCommand = ''
-          ${lnRef a}
-          ${lnVcf "a" a}
-          ${lnVcf "b" b}
+          ${lnRef (head xs)}
+          ${concatMapStringsSep "\n" lnVcf xs}
           gatk CombineGVCFs \
             -R ref.fa \
-            --variant a.vcf.gz \
-            --variant b.vcf.gz \
+            ${concatMapStringsSep "\n" (x: "--variant $(basename ${x}) \\") xs}
             -O $out
         '';
-        passthru.filetype = filetype.vcf { ref = getRef a; };
+        passthru.filetype = filetype.vcf { ref = getRef (head xs); };
       });
 
       callGenotypes = exec (_: input: stage {
@@ -61,10 +59,10 @@ in
         buildInputs = [ self.gatk.app ];
         buildCommand = ''
           ${lnRef input}
-          ${lnVcf "input" input}
+          ${lnVcf input}
           gatk GenotypeGVCFs \
             -R ref.fa \
-            -V input.vcf.gz \
+            -V $(basename ${input})\
             -O $out
         '';
         passthru.filetype = filetype.vcf { ref = getRef input; };
