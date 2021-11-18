@@ -17,7 +17,6 @@ let
 
   pipeline = flip pipe [
     (mapAttrsToList (id: bwa.align { inherit ref; flags = "-R'@RG\\tID:${id}\\tSM:${id}'"; }))
-    (take 11)
     (map (samtools.sort { }))
     (map (gatk.callHaplotype { targets = [ PMIX PMX ]; }))
     (gatk.merge { })
