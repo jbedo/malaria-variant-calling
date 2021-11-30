@@ -4,7 +4,9 @@ This is an example [BioNix](https://github.com/PapenfussLab/BioNix) pipeline for
 variant calling in a target region over 5k publicly available Plasmodium Vivax
 sequencing samples. The data processing aligns each sample against the reference
 genome, sorts the reads, then calls variants on the population using
-[GATK](https://github.com/broadinstitute/gatk).
+[GATK](https://github.com/broadinstitute/gatk). Copy number is called
+independently on each sample using
+[QDNAseq](https://bioconductor.org/packages/3.14/bioc/html/QDNAseq.html).
 
 Notable design choices:
 
