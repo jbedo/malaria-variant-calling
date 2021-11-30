@@ -11,7 +11,12 @@
       (system: with bionix.lib
         {
           nixpkgs = import nixpkgs {
-            inherit system; overlays = [
+            inherit system;
+
+            # We need Kent, but only free parts
+            config = { allowUnfree = true; };
+
+            overlays = [
             (_: super: with super; {
               fetchurl = x: (fetchurl x).overrideAttrs (_: {
                 MEMORY = "100M";
