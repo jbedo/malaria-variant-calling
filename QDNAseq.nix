@@ -39,18 +39,18 @@ makeExtensible (self: with self;
     saveRDS(pfBins, Sys.getenv("out"))
   '');
 
-  count = exec (_: input: runRScript "count" ''
+  count = exec ({ name ? null, ... }: input: runRScript "count" ''
     library(QDNAseq)
     pfBins <- readRDS("${bins}")
     seqnames <- c(${concatMapStringsSep "," (x: "'${x}'") sequences})
     pfBins2chrom <- pfBins[pfBins$chromosome %in% seqnames,]
-    countsbin <- binReadCounts(pfBins2chrom, bamfiles="${input}")
+    countsbin <- binReadCounts(pfBins2chrom, bamfiles="${input}" ${optionalString (name != null) ", bamnames='${name}'"})
     saveRDS(countsbin, Sys.getenv("out"))
   '');
 
-  call = exec (_: input: runRScript "call" ''
+  call = exec (attrs: input: runRScript "call" ''
     library(QDNAseq)
-    countsbin <- readRDS("${count {} input}")
+    countsbin <- readRDS("${count attrs input}")
     countsFiltered <- applyFilters(
         countsbin
       , mappability=50

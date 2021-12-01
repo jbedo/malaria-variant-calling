@@ -22,15 +22,19 @@ let
     (samtools.sort { })
   ];
 
-  callSNP = flip pipe [
-    attrValues
+in
+linkOutputs {
+  cnv = mapAttrs'
+    (name: flip pipe [
+      (preprocess name)
+      (QDNAseq.call { inherit name; })
+      (nameValuePair "${name}.rds")
+    ])
+    samples;
+  "variants.vcf.gz" = pipe samples [
+    (mapAttrsToList preprocess)
     (map (gatk.callHaplotype { targets = [ PMIX PMX ]; }))
     (gatk.merge { })
     (gatk.callGenotypes { })
   ];
-
-in
-linkOutputs {
-  cnv = pipe samples [ (mapAttrs preprocess) (mapAttrs (_: QDNAseq.call { })) (mapAttrs' (n: nameValuePair "${n}.rds")) ];
-  "variants.vcf.gz" = pipe samples [ (mapAttrs preprocess) callSNP ];
 }
