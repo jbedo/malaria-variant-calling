@@ -19,9 +19,15 @@ Notable design choices:
 This repository is configured as a Nix
 [flake](https://nixos.wiki/wiki/Flakes#Installing_nix_flakes) and can be built
 with:
-
 ``` sh
 nix build github:jbedo/malaria-variant-calling
+```
+
+As the full workflow runs over a significant number of sequences this requires
+a large amount of space and computational time. To enable testing/experimentation
+the workflow can be run on a small subset of the data with:
+``` sh
+nix build github:jbedo/malaria-variant-calling#small
 ```
 
 ## Slurm cluster execution

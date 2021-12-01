@@ -1,4 +1,6 @@
-{ bionix ? import <bionix> { } }:
+{ bionix ? import <bionix> { }
+, small ? false
+}:
 
 with bionix;
 with lib;
@@ -13,7 +15,9 @@ let
   PMX = "PvP01_01_v2:555499-559411";
 
   ena = pkgs.callPackage ./ena.nix { inherit fetchFastQGZ; };
-  samples = ena.importFromJSON ./PRJEB2140.json;
+  samples' = ena.importFromJSON ./PRJEB2140.json;
+  samples = if small then takeAttrs 9 samples' else samples';
+  takeAttrs = n: xs: listToAttrs (zipListsWith nameValuePair (take n (attrNames xs)) (attrValues xs));
 
   QDNAseq = callBionix ./QDNAseq.nix { inherit ref; targets = [ PMIX PMX ]; };
 
