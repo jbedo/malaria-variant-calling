@@ -5,8 +5,6 @@ with lib;
 with pkgs;
 
 let
-  mappability = callBionix ./mappability.nix { };
-
   r = rWrapper.override {
     packages = with rPackages;[ QDNAseq Biobase (callPackage ./bsgenome.nix { inherit ref; }) ];
   };
@@ -24,6 +22,15 @@ let
 in
 makeExtensible (self: with self;
 {
+  toBW = exec
+    (_: wig: stage {
+      name = "wig2bigwig.bw";
+      buildInputs = [ pkgs.kent ];
+      buildCommand = ''
+        wigToBigWig ${wig}/*.{wig,chrom.sizes} $out
+      '';
+    });
+
   bins = exec'' (runRScript "bin" ''
     library(BSgenome.vivax)
     library(QDNAseq)
@@ -31,7 +38,7 @@ makeExtensible (self: with self;
     pfBins <- createBins(BSgenome.vivax, ${toString binWidth})
     pfBins$mappability <- calculateMappability(pfBins
       , bigWigAverageOverBed="${kent}/bin/bigWigAverageOverBed"
-      , bigWigFile="${with mappability; toBW {} (calcmap {} ref)}"
+      , bigWigFile="${toBW {} (bionix.genmap.calcmap {} ref)}"
       , chrPrefix="")
     ${optionalString (blacklist != null) ''
       pfBins$blacklist <- calculateBlacklist(pfBins, bedFiles="${blacklist}")
