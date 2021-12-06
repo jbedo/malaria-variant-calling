@@ -2,11 +2,11 @@
   "nodes": {
     "bionix": {
       "locked": {
-        "lastModified": 1638737282,
-        "narHash": "sha256-ARYOjVwE1CPVZpLlAGikOkZuHOIzjzRBiCN5P/qZLEM=",
+        "lastModified": 1638771827,
+        "narHash": "sha256-FqdTAg6/FBJMShFhmAhpHfhAPXUYElRx8I5dyTLea9M=",
         "owner": "papenfusslab",
         "repo": "bionix",
-        "rev": "18d442a951dc36a352c13c604642cb3d4db5a6b6",
+        "rev": "d75b723281aea944fbafdb28f5b0841a03827b4a",
         "type": "github"
       },
       "original": {

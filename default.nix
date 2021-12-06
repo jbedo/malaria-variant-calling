@@ -22,7 +22,7 @@ let
   QDNAseq = callBionix ./QDNAseq.nix { inherit ref; targets = [ PMIX PMX ]; };
 
   preprocess = id: flip pipe [
-    (bwa.align { inherit ref; flags = "-R'@RG\\tID:${id}\\tSM:${id}'"; })
+    (bwa.align { inherit ref; RG = { ID = id; SM = id; }; })
     (samtools.sort { })
   ];
 
