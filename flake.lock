@@ -2,11 +2,11 @@
   "nodes": {
     "bionix": {
       "locked": {
-        "lastModified": 1638771827,
-        "narHash": "sha256-FqdTAg6/FBJMShFhmAhpHfhAPXUYElRx8I5dyTLea9M=",
+        "lastModified": 1639971504,
+        "narHash": "sha256-az00Q0BcniCzWc8suiaYfjaNDINyMNaC6DvhMAa3bRs=",
         "owner": "papenfusslab",
         "repo": "bionix",
-        "rev": "d75b723281aea944fbafdb28f5b0841a03827b4a",
+        "rev": "eebc44e609cc2f901c7ea694d62e36f63cbeae24",
         "type": "github"
       },
       "original": {
@@ -32,11 +32,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1638735405,
-        "narHash": "sha256-yyxzgNwKHFKME4Zv2I095tgUfs6By+Kcf6G68+NgE4U=",
+        "lastModified": 1640044964,
+        "narHash": "sha256-ECsnOoOdWYqULksuFTo736jfJp9Hs7gS/xJhhVmVtv4=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "e98afa97d3554e00661e436ba5ab5938d40bc761",
+        "rev": "14f3576475069686ed963ddd8d20f1a79e723b07",
         "type": "github"
       },
       "original": {
