@@ -1,6 +1,6 @@
 { bionix ? import <bionix> { }
 , small ? false
-, chunkSize ? 10
+, chunkSize ? 100
 }:
 
 with bionix;
