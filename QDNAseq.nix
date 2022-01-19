@@ -17,6 +17,8 @@ let
     buildCommand = ''
       Rscript ${writeText "${name}.R" script}
     '';
+    MEMORY = "10G";
+    WALLTIME = "12:00:00";
   });
 
 in
