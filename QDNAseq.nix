@@ -11,15 +11,13 @@ let
 
   sequences = map (x: head (splitString ":" x)) targets;
 
-  runRScript = name: script: exec'' (stage {
+  runRScript = name: script: stage {
     inherit name;
     buildInputs = [ r ];
     buildCommand = ''
       Rscript ${writeText "${name}.R" script}
     '';
-    MEMORY = "10G";
-    WALLTIME = "12:00:00";
-  });
+  };
 
 in
 makeExtensible (self: with self;
@@ -48,16 +46,16 @@ makeExtensible (self: with self;
     saveRDS(pfBins, Sys.getenv("out"))
   '');
 
-  count = exec ({ name ? null, ... }: input: runRScript "count" ''
+  count = flip def { mem = 10; walltime = "12:00:00"; } (exec ({ name ? null, ... }: input: runRScript "count" ''
     library(QDNAseq)
     pfBins <- readRDS("${bins}")
     seqnames <- c(${concatMapStringsSep "," (x: "'${x}'") sequences})
     pfBins2chrom <- pfBins[pfBins$chromosome %in% seqnames,]
     countsbin <- binReadCounts(pfBins2chrom, bamfiles="${input}" ${optionalString (name != null) ", bamnames='${name}'"})
     saveRDS(countsbin, Sys.getenv("out"))
-  '');
+  ''));
 
-  call = exec (attrs: input: runRScript "call" ''
+  call = flip def { mem = 10; walltime = "12:00:00"; } (exec (attrs: input: runRScript "call" ''
     library(QDNAseq)
     countsbin <- readRDS("${count attrs input}")
     countsFiltered <- applyFilters(
@@ -69,5 +67,5 @@ makeExtensible (self: with self;
     copyNums <- correctBins(countsCorrected)
     copyNumsNormed <- normalizeBins(copyNums)
     saveRDS(copyNumsNormed, Sys.getenv("out"))
-  '');
+  ''));
 })
