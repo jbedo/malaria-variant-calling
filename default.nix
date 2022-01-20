@@ -1,5 +1,6 @@
 { bionix ? import <bionix> { }
 , small ? false
+, chunkSize ? 100
 }:
 
 with bionix;
@@ -26,6 +27,17 @@ let
     (samtools.sort { })
   ];
 
+  chunkFold1 = n: f: xs:
+    if length xs <= n then
+      f xs
+    else
+      chunkFold1 n f (chunkFold1' n f xs);
+  chunkFold1' = n: f: xs:
+    if length xs <= n then
+      xs
+    else
+      [ (f (take n xs)) ] ++ chunkFold1' n f (drop n xs);
+
 in
 linkOutputs {
   cnv = mapAttrs'
@@ -38,7 +50,7 @@ linkOutputs {
   "variants.vcf.gz" = pipe samples [
     (mapAttrsToList preprocess)
     (map (gatk.callHaplotype { targets = [ PMIX PMX ]; }))
-    (gatk.merge { })
+    (chunkFold1 chunkSize (gatk.merge { }))
     (gatk.callGenotypes { })
   ];
 }
