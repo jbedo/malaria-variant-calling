@@ -38,6 +38,34 @@ let
     else
       [ (f (take n xs)) ] ++ chunkFold1' n f (drop n xs);
 
+  # bionix linking is unusable as there are too many links!
+  linkOutputs = x:
+    let
+      cmds =
+        let
+          recurse = x:
+            if x ? type && x.type == "derivation" then
+              x
+            else if builtins.typeOf x == "set" then
+              linkOutputs x
+            else
+              abort "linkOutputs: unsupported type";
+          link = dst: src: ''
+            ln -s ${recurse src} $(perl -e 'print $ENV{"${dst}"}') ; ln -s ${recurse src} $out/${dst}
+          '';
+        in
+        ''
+          mkdir $out
+          ${concatStringsSep "\n" (mapAttrsToList link x)}
+        '';
+    in
+    pkgs.stdenvNoCC.mkDerivation {
+      name = "link-outputs";
+      nativeBuildInputs = [ pkgs.perl ];
+      buildCommand = "exec sh ${pkgs.writeScript "make-links" cmds}";
+      passthru.linkInputs = x;
+    };
+
 in
 linkOutputs {
   cnv = mapAttrs'
